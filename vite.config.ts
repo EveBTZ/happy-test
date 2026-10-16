@@ -7,7 +7,10 @@ import tsConfigPaths from "vite-tsconfig-paths";
 import { nitro } from "nitro/vite";
 
 export default defineConfig({
-  server: { port: 3000 },
+     server: {
+       port: 3000,
+       allowedHosts: [".app.github.dev"],
+     },
   resolve: { dedupe: ["react", "react-dom", "@tanstack/react-router", "@tanstack/react-start"] },
   plugins: [
     tsConfigPaths(),
