@@ -52,10 +52,13 @@ function ChoisirRolePage() {
   useEffect(() => {
     (async () => {
       try {
+        // Compte anonyme tout neuf : pas encore d'adresse, donc pas encore de profil
         const [{ data: teamRows, error: teamErr }, own, existingRole] = await Promise.all([
           supabase.from("teams").select("name").eq("is_reserved", false).order("name"),
-          supabase.from("allowed_users").select("id, first_name, last_name, team").eq("email", email.toLowerCase()).maybeSingle(),
-          fetchOwnRole(email),
+          email
+            ? supabase.from("allowed_users").select("id, first_name, last_name, team").eq("email", email.toLowerCase()).maybeSingle()
+            : Promise.resolve({ data: null }),
+          email ? fetchOwnRole(email) : Promise.resolve(null),
         ]);
         if (teamErr) throw teamErr;
         setTeams((teamRows ?? []).map((t) => t.name));
@@ -99,11 +102,14 @@ function ChoisirRolePage() {
       _last_name: lastName.trim(),
       _team: role === "admin" ? null : team,
     });
-    setBusy(false);
     if (err) {
+      setBusy(false);
       setError(err.message);
       return;
     }
+    // La base vient éventuellement d'attribuer une adresse interne au compte :
+    // on rafraîchit la session pour que les règles de sécurité la voient.
+    await supabase.auth.refreshSession();
     // Rechargement complet : le dashboard relit le rôle à l'ouverture.
     window.location.replace("/");
   }
@@ -194,9 +200,9 @@ function ChoisirRolePage() {
           )}
 
           <div className="mt-sm flex flex-wrap items-center justify-between gap-xs font-body-sm text-body-sm text-on-surface-variant">
-            <span>Connecté·e : {email}</span>
+            <span>Ton rôle est gardé dans ce navigateur.</span>
             <button type="button" onClick={signOut} className="text-primary underline-offset-2 hover:underline">
-              Se déconnecter
+              Recommencer avec un nouveau profil
             </button>
           </div>
         </section>

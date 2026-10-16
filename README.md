@@ -2,62 +2,74 @@
 
 Happy Place est le dashboard interne de **Bigger Boat**, un cabinet de recrutement fictif. Il réunit les actualités, les idées et demandes des équipes, les points bloquants et les indicateurs.
 
-Ce dépôt contient **le code de l'app à l'identique**, avec une seule différence : la connexion est libre. Tu crées un compte avec ton email, puis tu **choisis ton rôle** (collaborateur, manager ou admin) et ton équipe. Le lien **« Changer de rôle »** en haut de l'écran te permet de tester l'app sous chaque angle.
+Ce dépôt contient **le code de l'app à l'identique**, avec une seule différence : **l'entrée est libre**. Pas d'email, pas de mot de passe : en ouvrant l'app, tu arrives directement sur l'écran **« Choisis ton rôle »** (collaborateur, manager ou admin) et tu choisis ton équipe. Le lien **« Changer de rôle »** en haut de l'écran te permet de tester l'app sous chaque angle.
 
-Chaque groupe installe **sa propre base Supabase**, sans toucher à celle des autres groupes.
+Chaque groupe installe **sa propre base Supabase**, sans toucher à celle des autres groupes. Tout le groupe partage la même app et les mêmes données.
 
 ---
 
 ## Ce qu'il te faut
 
-- Un compte [Supabase](https://supabase.com) (plan gratuit).
-- [Node.js](https://nodejs.org) version 20 ou plus (vérifie avec `node -v`).
-- Ce dossier sur ton ordinateur.
+- Un compte [GitHub](https://github.com) et un compte [Supabase](https://supabase.com) (plans gratuits ; tu peux te connecter à Supabase avec ton compte GitHub).
+- Rien à installer : l'app se lance dans ton navigateur avec **GitHub Codespaces**. Si tu préfères travailler sur ton ordinateur, il te faut [Node.js](https://nodejs.org) version 20 ou plus.
 
-Compte environ 15 minutes.
+Compte environ 20 minutes. **Une seule personne par groupe** fait l'installation.
 
 ---
+
+## 0. Créer le dépôt du groupe
+
+1. En haut de cette page GitHub, clique sur le bouton vert **Use this template** → **Create a new repository**.
+2. Donne-lui un nom (par exemple `happy-place-groupe-3`), puis **Create repository**.
+
+Tu travailles désormais dans **ce nouveau dépôt** : c'est la copie de ton groupe.
 
 ## 1. Créer le projet Supabase
 
 1. Sur [supabase.com/dashboard](https://supabase.com/dashboard), clique sur **New project**.
-2. Donne-lui un nom (par exemple `happy-place-groupe-3`), choisis un mot de passe de base de données et une région en Europe.
-3. Attends que le projet soit prêt (1 à 2 minutes).
+2. Donne-lui un nom (par exemple `happy-place-groupe-3`), clique sur **Generate a password** et choisis une région en Europe.
+3. Clique sur **Create new project** et attends 1 à 2 minutes.
 
-## 2. Désactiver la confirmation par email
+## 2. Activer les connexions anonymes
 
-Sans cette étape, chaque inscription attend un email de confirmation.
+C'est ce qui permet d'entrer dans l'app sans email ni mot de passe.
 
-**Authentication** → **Sign In / Providers** → **Email** → désactive **Confirm email** → **Save**.
+**Authentication** → **Sign In / Providers** → active **Allow anonymous sign-ins** → **Save**.
 
 ## 3. Installer la base de données
 
-1. Ouvre **SQL Editor** → **New query**.
-2. Ouvre le fichier `supabase/setup.sql` de ce dossier, copie **tout** son contenu, colle-le, puis clique sur **Run**.
-3. Le dernier résultat affiche une liste de tests : **toutes les lignes doivent indiquer `ok = true`**.
-4. Ouvre une nouvelle requête, colle le contenu de `supabase/seed.sql` (les données de démo), puis **Run**.
+1. Dans ton dépôt GitHub, ouvre le dossier **supabase**, puis le fichier **setup.sql**. Clique sur l'icône **Copy raw file** (deux carrés superposés, au-dessus du code à droite).
+2. Dans Supabase : **SQL Editor** → **+ New query**. Colle, puis clique sur **Run**.
+3. Si Supabase te demande comment gérer la sécurité des tables (RLS), choisis **Run without RLS** : le script active lui-même les règles de sécurité sur toutes les tables. Si un avertissement parle de « destructive operations », clique sur **Run this query**.
+4. Un tableau de 13 lignes apparaît : **toutes les lignes doivent indiquer `ok = true`**.
+5. Fais de même avec **seed.sql** (les données de démo), dans une **nouvelle** requête. Résultat attendu : « Success. No rows returned ».
 
-> Tu peux relancer `seed.sql` à tout moment pour remettre les contenus de démo dans leur état de départ. Les comptes créés sont conservés.
+> Tu peux relancer `seed.sql` à tout moment pour remettre les contenus de démo dans leur état de départ. Les profils créés sont conservés.
 
-## 4. Relier l'app à ta base
+## 4. Récupérer tes deux clés
 
-1. Dans Supabase, clique sur **Connect** (en haut), ou ouvre **Project Settings** → **API Keys**.
-2. Récupère l'**URL du projet** (`https://xxxx.supabase.co`) et la **Publishable key** (`sb_publishable_…`).
-3. Dans ce dossier, copie le fichier `.env.example` et renomme la copie en `.env`.
-4. Remplace les deux valeurs dans `.env`.
+Dans Supabase, clique sur **Connect** (en haut de la page) et note :
+- l'**URL du projet** : `https://xxxx.supabase.co`
+- la **Publishable key** : `sb_publishable_…`
 
-> La clé « publishable » est faite pour être utilisée dans le navigateur. N'utilise **jamais** la clé `secret` ou `service_role` dans ce fichier.
+*Sinon : **Project Settings** → **API Keys** pour la clé, **Data API** pour l'URL.*
 
-## 5. Lancer l'app
+> La clé « publishable » est faite pour être utilisée dans le navigateur. N'utilise **jamais** la clé `secret` ou `service_role`.
 
-Dans un terminal, depuis ce dossier :
+## 5. Lancer l'app dans un Codespace
 
-```sh
-npm install
-npm run dev
-```
+1. Dans ton dépôt GitHub : bouton vert **Code** → onglet **Codespaces** → **Create codespace on main**. Un éditeur s'ouvre dans ton navigateur (environ une minute).
+2. Dans le **Terminal** en bas de l'écran, tape `cp .env.example .env` puis Entrée. Le fichier `.env` apparaît à gauche : ouvre-le, remplace les deux valeurs par tes clés de l'étape 4, puis **Ctrl + S**.
+3. Dans le terminal, tape `npm install` (attends la fin), puis `npm run dev`.
+4. Clique sur **Open in Browser** dans la fenêtre qui apparaît (ou onglet **Ports** → ligne **3000** → icône du globe).
 
-Ouvre [http://localhost:3000](http://localhost:3000), clique sur **Créer un compte**, puis choisis ton rôle.
+L'app s'ouvre directement sur **« Choisis ton rôle »**.
+
+Pour partager l'app avec ton groupe : onglet **Ports** → clic droit sur la ligne **3000** → **Port Visibility** → **Public**, puis copie l'adresse et envoie-la.
+
+> Un Codespace s'arrête tout seul après 30 minutes d'inactivité. Pour le relancer : **Code** → **Codespaces** → clique sur son nom, puis relance `npm run dev`. Le compte gratuit GitHub inclut un quota mensuel d'heures de Codespaces.
+
+**Sur ton ordinateur plutôt ?** Télécharge le dépôt, crée le fichier `.env` de la même façon, puis lance `npm install` et `npm run dev` dans un terminal, et ouvre [http://localhost:3000](http://localhost:3000).
 
 ---
 
@@ -71,7 +83,9 @@ Ouvre [http://localhost:3000](http://localhost:3000), clique sur **Créer un com
 
 Ces droits sont appliqués **par la base elle-même** (règles RLS de Supabase), pas seulement par l'interface.
 
-La base contient aussi dix membres fictifs de Bigger Boat (`@biggerboat.example`). Ils n'ont pas de compte de connexion : ils peuplent l'écran des utilisateurs et managent certaines équipes.
+La base contient aussi dix membres fictifs de Bigger Boat (`@biggerboat.example`). Ils n'ont pas de compte : ils peuplent l'écran des utilisateurs et managent certaines équipes.
+
+**Ton profil est gardé dans ton navigateur.** En revenant plus tard, tu retrouves ton rôle. Si tu changes de navigateur ou vides ton historique, tu repars avec un nouveau profil : ce que tu as déjà créé reste dans la base. Les profils des élèves apparaissent dans l'app avec une adresse interne du type `eleve-xxxx@happyplace.test`.
 
 ---
 
@@ -89,7 +103,8 @@ La base contient aussi dix membres fictifs de Bigger Boat (`@biggerboat.example`
 | Symptôme | Cause probable |
 |---|---|
 | « Missing Supabase environment variable(s) » | Le fichier `.env` est absent ou mal nommé. Relance `npm run dev` après l'avoir corrigé. |
-| « Ce compte attend une confirmation par email » | L'étape 2 n'a pas été faite. Désactive **Confirm email**, puis crée un nouveau compte. |
+| « Les connexions anonymes ne sont pas activées » | L'étape 2 n'a pas été faite. Active **Allow anonymous sign-ins**, puis clique sur **Réessayer**. |
+| « Blocked request. This host is not allowed » | Le fichier `vite.config.ts` a été modifié : il doit contenir `allowedHosts: [".app.github.dev"]`. |
 | « Impossible de charger les équipes » | `setup.sql` n'a pas été exécuté en entier. Relance-le sur un projet neuf. |
 | Le dashboard est vide | `seed.sql` n'a pas été exécuté. |
 | Un test de `setup.sql` est à `false` | Le script a été lancé deux fois, ou en partie. Le plus simple est de repartir d'un projet Supabase neuf. |
@@ -98,8 +113,8 @@ La base contient aussi dix membres fictifs de Bigger Boat (`@biggerboat.example`
 
 ### Différences avec l'app d'origine
 
-- **Connexion** : email et mot de passe ouverts à tous, à la place de la connexion Google réservée à une liste blanche.
+- **Entrée libre** : session anonyme Supabase ouverte automatiquement, à la place de la connexion Google réservée à une liste blanche.
 - **Nouvel écran** `/choisir-role` et lien « Changer de rôle » dans l'en-tête.
-- **Nouvelle fonction SQL** `choisir_mon_role` (migration `20261016090000_connexion_libre.sql`). Les règles de sécurité par rôle sont inchangées.
-- **Configuration standard** à la place des outils propres à Lovable (`vite.config.ts`, client Supabase).
+- **Nouvelle fonction SQL** `choisir_mon_role` (migrations `20261016090000_connexion_libre.sql` et `20261016100000_entree_directe.sql`) : elle enregistre le rôle et donne au profil anonyme une adresse interne. Les règles de sécurité par rôle sont inchangées.
+- **Configuration standard** à la place des outils propres à Lovable (`vite.config.ts`, client Supabase), compatible GitHub Codespaces.
 - **Base installable de zéro** : migrations regroupées dans `supabase/migrations`, espaces de stockage ajoutés, et une ancienne migration inutilisée retirée.
